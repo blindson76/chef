@@ -1,0 +1,46 @@
+{
+  "id": "mongoInit",
+  "initial": "init",
+  "states": {
+    "init": {
+      "on": {
+        "start": [
+          {
+            "target": "spawnLocal",
+            "actions": [],
+            "meta": {}
+          }
+        ]
+      }
+    },
+    "spawnLocal": {
+      "entry": {
+        "type": "spawnMongo"
+      },
+      "on": {
+        "pingOK": [
+          {
+            "target": "running",
+            "actions": [],
+            "meta": {}
+          }
+        ],
+        "spawnError": [
+          {
+            "target": "failed",
+            "actions": [],
+            "meta": {}
+          }
+        ]
+      }
+    },
+    "running": {
+      "entry": {
+        "type": "collectStatus"
+      }
+    },
+    "failed": {
+      "type": "final"
+    }
+  }
+}

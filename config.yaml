@@ -36,19 +36,22 @@ constraints:
 
 kafka:
   enabled: true
-  slotServicePrefix: "kafka"
+  slotServicePrefix: "kafka"   # kafka-1, kafka-2, kafka-3
   binary: "H:/cots/kafka/bin/windows/kafka-server-start.bat"
+  storageFormatBinary: "H:/cots/kafka/bin/windows/kafka-storage.bat"
   logDir: "H:/pak/infra/data/kafka/%NODE%/logs"
   metaLogDir: "H:/pak/infra/data/kafka/%NODE%/meta"
+  configPath: "H:/pak/infra/data/kafka/%NODE%/server.properties"
   inspectTimeout: "2s"
   startArgs: []
-  stopMode: "terminate"
+  stopMode: "terminate"  # terminate|interrupt (interrupt is best-effort)
 
 mongo:
   enabled: true
-  slotServicePrefix: "mongo"
+  slotServicePrefix: "mongo"   # mongo-1, mongo-2, mongo-3
   binary: "H:/cots/mongo/bin/mongod.exe"
   dbPath: "H:/pak/infra/data/mongo/%NODE%"
+  configPath: "H:/pak/infra/data/mongo/%NODE%/mongod.conf"
   port: 27017
   inspectTimeout: "2s"
   startArgs: []
