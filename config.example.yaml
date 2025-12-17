@@ -1,0 +1,58 @@
+cluster:
+  name: "main"
+  consul:
+    address: "http://127.0.0.1:8500"
+    token: ""
+  nodeId: "MFCC-Server-1"
+  advertiseIp: "10.10.51.1"
+  http:
+    listen: "0.0.0.0:18080"
+    authToken: "change-me"
+  logRoot: "H:/pak/orchestrator/logs"
+
+timing:
+  leaderLockTtl: "10s"
+  candidateTtl: "15s"
+  healthTtl: "15s"
+  reconcileEvery: "3s"
+
+node:
+  tags:
+    site: "ankara"
+    rack: "r1"
+    disk.ssd: "true"
+    allow.kafka: "true"
+    allow.mongo: "true"
+
+maintenance:
+  localEnabled: false
+  localReason: ""
+
+constraints:
+  kafka:
+    - { key: "allow.kafka", op: "equals", value: "true" }
+  mongo:
+    - { key: "allow.mongo", op: "equals", value: "true" }
+
+kafka:
+  enabled: true
+  slotServicePrefix: "kafka"   # kafka-1, kafka-2, kafka-3
+  binary: "H:/cots/kafka/bin/windows/kafka-server-start.bat"
+  storageFormatBinary: "H:/cots/kafka/bin/windows/kafka-storage.bat"
+  logDir: "H:/pak/infra/data/kafka/%NODE%/logs"
+  metaLogDir: "H:/pak/infra/data/kafka/%NODE%/meta"
+  configPath: "H:/pak/infra/data/kafka/%NODE%/server.properties"
+  inspectTimeout: "2s"
+  startArgs: []
+  stopMode: "terminate"  # terminate|interrupt (interrupt is best-effort)
+
+mongo:
+  enabled: true
+  slotServicePrefix: "mongo"   # mongo-1, mongo-2, mongo-3
+  binary: "H:/cots/mongo/bin/mongod.exe"
+  dbPath: "H:/pak/infra/data/mongo/%NODE%"
+  configPath: "H:/pak/infra/data/mongo/%NODE%/mongod.conf"
+  port: 27017
+  inspectTimeout: "2s"
+  startArgs: []
+  stopMode: "terminate"
