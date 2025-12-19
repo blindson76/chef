@@ -13,7 +13,6 @@ import (
 
 type Config struct {
 	Address string
-	Token   string
 }
 
 type ConsulStore struct{ c *capi.Client }
@@ -22,9 +21,6 @@ func New(cfg Config) (*ConsulStore, error) {
 	ccfg := capi.DefaultConfig()
 	if cfg.Address != "" {
 		ccfg.Address = cfg.Address
-	}
-	if cfg.Token != "" {
-		ccfg.Token = cfg.Token
 	}
 	c, err := capi.NewClient(ccfg)
 	if err != nil {

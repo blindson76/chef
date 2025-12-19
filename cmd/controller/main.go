@@ -25,7 +25,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	st, err := consul.New(consul.Config{Address: cfg.Cluster.Consul.Address, Token: cfg.Cluster.Consul.Token})
+	st, err := consul.New(consul.Config{Address: cfg.Cluster.Consul.Address})
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -37,12 +37,12 @@ func main() {
 	rt := controller.Runtime{Cfg: cfg, Store: st, Key: key}
 
 	// run 2 independent leader loops (kafka + mongo)
-	go func() {
-		lock := key.LeaderLock("kafka")
-		_ = leader.RunWithLock(ctx, st, lock, cfg.LeaderTTL(), func(lctx context.Context) error {
-			return controller.RunLoop(lctx, rt, "kafka")
-		})
-	}()
+	// go func() {
+	// 	lock := key.LeaderLock("kafka")
+	// 	_ = leader.RunWithLock(ctx, st, lock, cfg.LeaderTTL(), func(lctx context.Context) error {
+	// 		return controller.RunLoop(lctx, rt, "kafka")
+	// 	})
+	// }()
 
 	lock := key.LeaderLock("mongo")
 	_ = leader.RunWithLock(ctx, st, lock, cfg.LeaderTTL(), func(lctx context.Context) error {

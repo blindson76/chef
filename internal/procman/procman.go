@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -26,8 +27,8 @@ type Instance struct {
 	StartedAt time.Time
 	Cmdline   []string
 
-	cmd *exec.Cmd
-	mu  sync.Mutex
+	cmd  *exec.Cmd
+	mu   sync.Mutex
 	done chan struct{}
 	err  error
 
@@ -47,6 +48,7 @@ func New(logRoot string) *Manager {
 }
 
 func (m *Manager) Start(ctx context.Context, service, instanceID, exe string, args []string, workdir string) (*Instance, error) {
+	log.Println("Exec command:", exe, args)
 	if exe == "" {
 		return nil, errors.New("exe required")
 	}
@@ -107,6 +109,7 @@ func (m *Manager) Start(ctx context.Context, service, instanceID, exe string, ar
 		_ = combinedF.Close()
 		inst.mu.Lock()
 		inst.err = cmd.Wait()
+		log.Println("cmd exit")
 		inst.mu.Unlock()
 	}()
 
@@ -166,4 +169,6 @@ func (m *Manager) Get(id string) *Instance {
 }
 
 func (i *Instance) ExitError() error { i.mu.Lock(); defer i.mu.Unlock(); return i.err }
-func (i *Instance) LogPaths() (string, string, string) { return i.stdoutPath, i.stderrPath, i.combinedPath }
+func (i *Instance) LogPaths() (string, string, string) {
+	return i.stdoutPath, i.stderrPath, i.combinedPath
+}

@@ -29,7 +29,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	st, err := consul.New(consul.Config{Address: cfg.Cluster.Consul.Address, Token: cfg.Cluster.Consul.Token})
+	st, err := consul.New(consul.Config{Address: cfg.Cluster.Consul.Address})
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -69,8 +69,8 @@ func main() {
 
 func lastPort(listen string) string {
 	// handles "0.0.0.0:18080" or ":18080"
-	for i := len(listen)-1; i>=0; i-- {
-		if listen[i]==':' {
+	for i := len(listen) - 1; i >= 0; i-- {
+		if listen[i] == ':' {
 			return listen[i+1:]
 		}
 	}

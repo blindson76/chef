@@ -176,6 +176,7 @@ func orderLoop(ctx context.Context, rt Runtime, kind string) {
 }
 
 func executeOrder(ctx context.Context, rt Runtime, kind string, ord model.Order) error {
+	log.Println("executing order", kind, ord.Type)
 	remoteKey := rt.Key.MaintenanceNode(kind, rt.Cfg.Cluster.NodeID)
 	rm, rmOK, _ := maintenance.ReadRemote(ctx, rt.Store, remoteKey)
 	eff := maintenance.Effective(rt.Cfg.Maintenance.LocalEnabled, rt.Cfg.Maintenance.LocalReason, rm, rmOK)
@@ -297,6 +298,7 @@ func publishProcMeta(ctx context.Context, rt Runtime, kind, instanceID string, o
 }
 
 func writeStatus(ctx context.Context, rt Runtime, kind, orderID string, st model.OrderStatus) error {
+	log.Println("Order status:", st)
 	b, _ := json.Marshal(st)
 	_, err := rt.Store.Put(ctx, rt.Key.OrderStatus(kind, orderID, rt.Cfg.Cluster.NodeID), b)
 	return err

@@ -3,11 +3,14 @@ package config
 import (
 	"errors"
 	"os"
+	"regexp"
 	"strings"
 	"time"
 
 	"gopkg.in/yaml.v3"
 )
+
+var envPattern = regexp.MustCompile(`\${env.([A-Za-z_][A-Za-z_]*)\}`)
 
 type Config struct {
 	Cluster struct {
@@ -80,12 +83,14 @@ type MongoConfig struct {
 }
 
 func Load(path string) (*Config, error) {
-	b, err := os.ReadFile(path)
+	raw, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
+
+	expanded := expandEnvVars(string(raw))
 	var c Config
-	if err := yaml.Unmarshal(b, &c); err != nil {
+	if err := yaml.Unmarshal([]byte(expanded), &c); err != nil {
 		return nil, err
 	}
 	applyEnvOverrides(&c)
@@ -118,10 +123,22 @@ func Load(path string) (*Config, error) {
 	return &c, nil
 }
 
-func (c *Config) LeaderTTL() time.Duration      { return mustDur(c.Timing.LeaderLockTtl, 10*time.Second) }
-func (c *Config) CandidateTTL() time.Duration   { return mustDur(c.Timing.CandidateTtl, 15*time.Second) }
-func (c *Config) HealthTTL() time.Duration      { return mustDur(c.Timing.HealthTtl, 15*time.Second) }
-func (c *Config) ReconcileEvery() time.Duration { return mustDur(c.Timing.ReconcileEvery, 3*time.Second) }
+func expandEnvVars(in string) string {
+	return envPattern.ReplaceAllStringFunc(in, func(m string) string {
+		sub := envPattern.FindStringSubmatch(m)
+		if len(sub) != 2 {
+			return m
+		}
+		return os.Getenv(sub[1])
+	})
+}
+
+func (c *Config) LeaderTTL() time.Duration    { return mustDur(c.Timing.LeaderLockTtl, 10*time.Second) }
+func (c *Config) CandidateTTL() time.Duration { return mustDur(c.Timing.CandidateTtl, 15*time.Second) }
+func (c *Config) HealthTTL() time.Duration    { return mustDur(c.Timing.HealthTtl, 15*time.Second) }
+func (c *Config) ReconcileEvery() time.Duration {
+	return mustDur(c.Timing.ReconcileEvery, 3*time.Second)
+}
 
 func mustDur(s string, def time.Duration) time.Duration {
 	if strings.TrimSpace(s) == "" {

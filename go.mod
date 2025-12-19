@@ -1,9 +1,12 @@
 module github.com/umitbozkurt/orchestrator
 
-go 1.25.3
+go 1.25.5
+
+
 
 require (
 	github.com/hashicorp/consul/api v1.29.1
+	github.com/qmuntal/stateless v1.7.2
 	gopkg.in/yaml.v3 v3.0.1
 )
 
@@ -22,7 +25,6 @@ require (
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
-	github.com/qmuntal/stateless v1.7.2 // indirect
 	golang.org/x/exp v0.0.0-20230817173708-d852ddb80c63 // indirect
 	golang.org/x/sys v0.19.0 // indirect
 )

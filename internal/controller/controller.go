@@ -144,6 +144,7 @@ func reconcileOnce(ctx context.Context, rt Runtime, kind string) {
 }
 
 func writeOrder(ctx context.Context, rt Runtime, kind string, ord model.Order) {
+	log.Println("writing order:", kind, ord)
 	b, _ := json.Marshal(ord)
 	_, _ = rt.Store.Put(ctx, rt.Key.Order(kind, ord.ID), b)
 	_, _ = rt.Store.Put(ctx, rt.Key.OrderPtr(kind, ord.TargetNode, ord.ID), []byte(ord.ID))
